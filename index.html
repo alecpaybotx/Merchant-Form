@@ -278,6 +278,16 @@
     .check-group { grid-template-columns: 1fr; }
     .header h1 { font-size: 1.5rem; }
   }
+
+  /* Required-field highlighting */
+  .field.missing input[type="text"], .field.missing input[type="tel"], .field.missing input[type="email"],
+  .field.missing select { border: 2px solid #c0392b !important; background: #fff5f4; }
+  .field.missing .radio-group, .field.missing .check-group { outline: 2px solid #c0392b; outline-offset: 6px; border-radius: 6px; }
+  .field .missing-note { display: none; color: #c0392b; font-size: 0.72rem; margin-top: 6px; font-weight: 500; }
+  .field.missing .missing-note { display: block; }
+  .form-error { display: none; background: #fff5f4; border: 1px solid #c0392b; color: #8e2a20; font-size: 0.82rem;
+    padding: 10px 12px; border-radius: 6px; margin-bottom: 14px; }
+  .form-error.show { display: block; }
 </style>
 <!-- Meta Pixel -->
 <script>
@@ -309,7 +319,7 @@ fbq('track', 'PageView');
     <p>Takes about 2 minutes. No commitment required.</p>
   </div>
 
-  <form id="merchantForm">
+  <form id="merchantForm" novalidate>
 
     <!-- Contact -->
     <div class="section-label">Your Info</div>
@@ -332,7 +342,7 @@ fbq('track', 'PageView');
 
     <div class="field">
       <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" placeholder="you@yourbusiness.com">
+      <input type="email" id="email" name="email" placeholder="you@yourbusiness.com" required>
     </div>
 
     <div class="row">
@@ -391,7 +401,7 @@ fbq('track', 'PageView');
 
     <div class="field">
       <label for="pos">Current POS System</label>
-      <select id="pos" name="pos">
+      <select id="pos" name="pos" required>
         <option value="" disabled selected>What are you using now?</option>
         <option>Clover</option>
         <option>Square</option>
@@ -407,7 +417,7 @@ fbq('track', 'PageView');
     <div class="field">
       <label>Monthly Processing Volume</label>
       <div class="radio-group">
-        <label class="radio-item"><input type="radio" name="volume" value="Under $10k"><span>Under $10k</span></label>
+        <label class="radio-item"><input type="radio" name="volume" value="Under $10k" required><span>Under $10k</span></label>
         <label class="radio-item"><input type="radio" name="volume" value="$10k – $30k"><span>$10k – $30k</span></label>
         <label class="radio-item"><input type="radio" name="volume" value="$30k – $50k"><span>$30k – $50k</span></label>
         <label class="radio-item"><input type="radio" name="volume" value="$50k – $100k"><span>$50k – $100k</span></label>
@@ -433,7 +443,7 @@ fbq('track', 'PageView');
 
     <div class="field">
       <label for="calltime">Best time to call</label>
-      <select id="calltime" name="calltime">
+      <select id="calltime" name="calltime" required>
         <option value="" disabled selected>When works best for you?</option>
         <option>Morning (8am – 12pm)</option>
         <option>Afternoon (12pm – 4pm)</option>
@@ -447,6 +457,7 @@ fbq('track', 'PageView');
       <textarea id="notes" name="notes" placeholder="Optional — add any context about your situation or questions you have."></textarea>
     </div>
 
+    <div class="form-error" id="formError">Please fill in the highlighted fields so Alec can prepare for your call.</div>
     <button type="submit">Request My Free Callback</button>
 
   </form>
@@ -470,8 +481,40 @@ fbq('track', 'PageView');
 </div>
 
 <script>
+  // Required-field validation: every field except the optional notes box
+  function fieldOf(el) { return el.closest('.field'); }
+  function markField(field, missing) {
+    if (!field) return;
+    field.classList.toggle('missing', missing);
+    if (missing && !field.querySelector('.missing-note')) {
+      const n = document.createElement('div'); n.className = 'missing-note'; n.textContent = 'Required';
+      field.appendChild(n);
+    }
+  }
+  function validateForm(form) {
+    let firstBad = null;
+    const check = (field, bad) => { markField(field, bad); if (bad && !firstBad) firstBad = field; };
+    form.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"], select').forEach(el => {
+      let bad = !el.value || !el.value.trim();
+      if (!bad && el.type === 'email') bad = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
+      if (!bad && el.type === 'tel') bad = el.value.replace(/\D/g, '').length < 10;
+      check(fieldOf(el), bad);
+    });
+    const vol = form.querySelector('input[name="volume"]');
+    if (vol) check(fieldOf(vol), !form.querySelector('input[name="volume"]:checked'));
+    const intr = form.querySelector('input[name="interest"]');
+    if (intr) check(fieldOf(intr), !form.querySelector('input[name="interest"]:checked'));
+    document.getElementById('formError').classList.toggle('show', !!firstBad);
+    if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return !firstBad;
+  }
+  document.addEventListener('input', e => { const f = e.target.closest && e.target.closest('.field.missing'); if (f) f.classList.remove('missing'); });
+  document.addEventListener('change', e => { const f = e.target.closest && e.target.closest('.field.missing'); if (f) f.classList.remove('missing'); });
+</script>
+<script>
   document.getElementById('merchantForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    if (!validateForm(this)) return;
     const btn = this.querySelector('button[type="submit"]');
     btn.textContent = 'Sending...';
     btn.disabled = true;
