@@ -341,8 +341,8 @@ fbq('track', 'PageView');
     </div>
 
     <div class="field">
-      <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" placeholder="you@yourbusiness.com" required>
+      <label for="email">Email Address <span style="opacity:.55;font-weight:400">(optional)</span></label>
+      <input type="email" id="email" name="email" placeholder="you@yourbusiness.com">
     </div>
 
     <div class="row">
@@ -432,7 +432,7 @@ fbq('track', 'PageView');
     <div class="section-label">What interests you</div>
 
     <div class="field">
-      <label>Select all that apply</label>
+      <label>Select all that apply <span style="opacity:.55;font-weight:400">(optional)</span></label>
       <div class="check-group">
         <label class="check-item"><input type="checkbox" name="interest" value="Lower rates"><span>Lower rates</span></label>
         <label class="check-item"><input type="checkbox" name="interest" value="Cash discount"><span>Cash discount program</span></label>
@@ -442,8 +442,8 @@ fbq('track', 'PageView');
     </div>
 
     <div class="field">
-      <label for="calltime">Best time to call</label>
-      <select id="calltime" name="calltime" required>
+      <label for="calltime">Best time to call <span style="opacity:.55;font-weight:400">(optional)</span></label>
+      <select id="calltime" name="calltime">
         <option value="" disabled selected>When works best for you?</option>
         <option>Morning (8am – 12pm)</option>
         <option>Afternoon (12pm – 4pm)</option>
@@ -481,7 +481,7 @@ fbq('track', 'PageView');
 </div>
 
 <script>
-  // Required-field validation: every field except the optional notes box
+  // Required: name, phone, city, state, business name, business type, current POS, monthly volume. Optional: email, interests, call time, notes.
   function fieldOf(el) { return el.closest('.field'); }
   function markField(field, missing) {
     if (!field) return;
@@ -495,15 +495,14 @@ fbq('track', 'PageView');
     let firstBad = null;
     const check = (field, bad) => { markField(field, bad); if (bad && !firstBad) firstBad = field; };
     form.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"], select').forEach(el => {
-      let bad = !el.value || !el.value.trim();
-      if (!bad && el.type === 'email') bad = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
+      const filled = el.value && el.value.trim();
+      let bad = el.required && !filled;
+      if (!bad && filled && el.type === 'email') bad = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
       if (!bad && el.type === 'tel') bad = el.value.replace(/\D/g, '').length < 10;
       check(fieldOf(el), bad);
     });
     const vol = form.querySelector('input[name="volume"]');
     if (vol) check(fieldOf(vol), !form.querySelector('input[name="volume"]:checked'));
-    const intr = form.querySelector('input[name="interest"]');
-    if (intr) check(fieldOf(intr), !form.querySelector('input[name="interest"]:checked'));
     document.getElementById('formError').classList.toggle('show', !!firstBad);
     if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return !firstBad;
