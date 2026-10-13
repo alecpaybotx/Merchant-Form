@@ -324,25 +324,19 @@ fbq('track', 'PageView');
     <!-- Contact -->
     <div class="section-label">Your Info</div>
 
-    <div class="row">
-      <div class="field">
-        <label for="fname">First Name</label>
-        <input type="text" id="fname" name="fname" placeholder="Maria" required>
-      </div>
-      <div class="field">
-        <label for="lname">Last Name</label>
-        <input type="text" id="lname" name="lname" placeholder="Garcia" required>
-      </div>
+    <div class="field">
+      <label for="fullname">First and Last Name</label>
+      <input type="text" id="fullname" name="name" placeholder="Maria Garcia" autocomplete="name" required>
     </div>
 
     <div class="field">
       <label for="phone">Phone Number</label>
-      <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000" required>
+      <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000" autocomplete="tel" inputmode="tel" required>
     </div>
 
     <div class="field">
       <label for="email">Email Address <span style="opacity:.55;font-weight:400">(optional)</span></label>
-      <input type="email" id="email" name="email" placeholder="you@yourbusiness.com">
+      <input type="email" id="email" name="email" placeholder="you@yourbusiness.com" autocomplete="email">
     </div>
 
     <div class="row">
@@ -369,19 +363,6 @@ fbq('track', 'PageView');
           <option>WI</option><option>WY</option>
         </select>
       </div>
-
-      <div class="field">
-        <label for="timezone">Time Zone</label>
-        <select id="timezone" name="timezone" required>
-          <option value="" disabled selected>Select your time zone</option>
-          <option>Eastern (EST/EDT)</option>
-          <option>Central (CST/CDT)</option>
-          <option>Mountain (MST/MDT)</option>
-          <option>Pacific (PST/PDT)</option>
-          <option>Alaska (AKST/AKDT)</option>
-          <option>Hawaii (HST)</option>
-        </select>
-      </div>
     </div>
 
     <div class="divider"></div>
@@ -390,8 +371,8 @@ fbq('track', 'PageView');
     <div class="section-label">Your Business</div>
 
     <div class="field">
-      <label for="bizname">Business Name</label>
-      <input type="text" id="bizname" name="bizname" placeholder="Sunrise Café" required>
+      <label for="bizname">Business Name and Website</label>
+      <input type="text" id="bizname" name="bizname" placeholder="Sunrise Café, sunrisecafe.com" autocomplete="organization" required>
     </div>
 
     <div class="field">
@@ -559,6 +540,8 @@ fbq('track', 'PageView');
   // Phone formatting
   document.getElementById('phone').addEventListener('input', function() {
     let v = this.value.replace(/\D/g,'');
+    // Drop the US country code so "+1 (502) 693-2990" from autofill keeps all 10 real digits
+    if (v.length === 11 && v.charAt(0) === '1') v = v.slice(1);
     if (v.length >= 10) {
       v = '(' + v.slice(0,3) + ') ' + v.slice(3,6) + '-' + v.slice(6,10);
     }
