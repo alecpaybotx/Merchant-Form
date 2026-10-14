@@ -371,8 +371,13 @@ fbq('track', 'PageView');
     <div class="section-label">Your Business</div>
 
     <div class="field">
-      <label for="bizname">Business Name and Website</label>
-      <input type="text" id="bizname" name="bizname" placeholder="Sunrise Café, sunrisecafe.com" autocomplete="organization" required>
+      <label for="bizname">Business Name</label>
+      <input type="text" id="bizname" name="bizname" placeholder="Sunrise Café" autocomplete="organization" required>
+    </div>
+
+    <div class="field">
+      <label for="bizwebsite">Business Website</label>
+      <input type="text" id="bizwebsite" name="bizwebsite" placeholder="sunrisecafe.com" required>
     </div>
 
     <div class="field">
@@ -473,7 +478,7 @@ fbq('track', 'PageView');
 </div>
 
 <script>
-  // Required: name, phone, city, state, business name, business type, current POS, monthly volume. Optional: email, interests, call time, notes.
+  // Required: name, phone, city, state, business name, business website, business type, current POS, monthly volume. Optional: email, interests, call time, notes.
   function fieldOf(el) { return el.closest('.field'); }
   function markField(field, missing) {
     if (!field) return;
