@@ -395,15 +395,15 @@ fbq('track', 'PageView');
 
     <div class="field">
       <label for="pos">Current POS System</label>
-      <select id="pos" name="pos" required>
-        <option value="" disabled selected>What are you using now?</option>
-        <option>Clover</option>
-        <option>Square</option>
-        <option>Toast</option>
-        <option>SkyTab / Shift4</option>
-        <option>Valor</option>
-        <option>PaysPOS</option>
-      </select>
+      <input type="text" id="pos" name="pos" list="pos-list" placeholder="What are you using now?" required>
+      <datalist id="pos-list">
+        <option value="Clover"></option>
+        <option value="Square"></option>
+        <option value="Toast"></option>
+        <option value="SkyTab / Shift4"></option>
+        <option value="Valor"></option>
+        <option value="PaysPOS"></option>
+      </datalist>
     </div>
 
     <div class="field">
