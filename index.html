@@ -4,7 +4,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://connect.facebook.net">
+<link rel="preconnect" href="https://www.facebook.com">
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1485075917016987');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1485075917016987&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel -->
 <title>Request a Call — Merchant Freedom Opportunities</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="32x32">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -289,18 +305,6 @@
     padding: 10px 12px; border-radius: 6px; margin-bottom: 14px; }
   .form-error.show { display: block; }
 </style>
-<!-- Meta Pixel -->
-<script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1485075917016987');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1485075917016987&ev=PageView&noscript=1"/></noscript>
-<!-- End Meta Pixel -->
 </head>
 <body>
 
@@ -320,6 +324,13 @@ fbq('track', 'PageView');
   </div>
 
   <form id="merchantForm" novalidate>
+    <input type="hidden" name="utm_source" value="">
+    <input type="hidden" name="utm_medium" value="">
+    <input type="hidden" name="utm_campaign" value="">
+    <input type="hidden" name="utm_content" value="">
+    <input type="hidden" name="utm_term" value="">
+    <input type="hidden" name="fbclid" value="">
+    <input type="hidden" name="landing_url" value="">
 
     <!-- Contact -->
     <div class="section-label">Your Info</div>
@@ -506,6 +517,41 @@ fbq('track', 'PageView');
   }
   document.addEventListener('input', e => { const f = e.target.closest && e.target.closest('.field.missing'); if (f) f.classList.remove('missing'); });
   document.addEventListener('change', e => { const f = e.target.closest && e.target.closest('.field.missing'); if (f) f.classList.remove('missing'); });
+</script>
+<script>
+  // Keep ad params for this tab. A later load only replaces a value when the URL has a non-empty one.
+  (function () {
+    var fields = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
+    var storageKey = 'mfo_lead_source';
+    var params = new URLSearchParams(location.search);
+    var stored = {};
+    try {
+      stored = JSON.parse(sessionStorage.getItem(storageKey) || '{}') || {};
+    } catch (e) {
+      stored = {};
+    }
+    if (!stored || typeof stored !== 'object') stored = {};
+
+    var hasAttribution = false;
+    fields.forEach(function (name) {
+      var value = params.get(name);
+      if (value && value.trim()) {
+        stored[name] = value.trim();
+        hasAttribution = true;
+      }
+    });
+    if (!stored.landing_url || hasAttribution) stored.landing_url = location.href;
+
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(stored));
+    } catch (e) {}
+
+    var form = document.getElementById('merchantForm');
+    fields.concat('landing_url').forEach(function (name) {
+      var input = form && form.elements[name];
+      if (input && stored[name]) input.value = stored[name];
+    });
+  })();
 </script>
 <script>
   document.getElementById('merchantForm').addEventListener('submit', async function(e) {
